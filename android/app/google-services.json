@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "875340820925",
+    "project_id": "gtsync-aebaa",
+    "storage_bucket": "gtsync-aebaa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:875340820925:android:2de4a6a3bdb717c07b22d4",
+        "android_client_info": {
+          "package_name": "com.fonerep.gtsync"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "875340820925-o08mj39hd67vfci85nm7do2gr8l8ipr8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIeE-XZFPlB_2VOh9Iq1u3WsgMh1jh7H8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "875340820925-o08mj39hd67vfci85nm7do2gr8l8ipr8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
