@@ -1,10 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:gtsync/widgets/favorite_contacts.dart';
-import 'package:gtsync/widgets/recent_chats.dart';
 import 'package:sms/sms.dart';
-
-import 'new_message.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -13,6 +9,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final fireBaseDB = FirebaseDatabase.instance.reference();
+  SmsQuery query = new SmsQuery();
+  List messages = [];
 
   @override
   void initState() {
@@ -21,93 +19,52 @@ class _HomeScreenState extends State<HomeScreen> {
     getAllMessages();
   }
 
-  // final databaseRef = FirebaseDatabase._instance_.reference(); //database reference object
-
-  // void addData(String data) {
-  //   databaseRef.push().set({'name': data, 'comment': 'A good season'});
-  // }
+  fetchSMS() async {
+    messages = await query.getAllSms;
+  }
 
   Future getAllMessages() async {
-    SmsQuery query = new SmsQuery();
-    List<SmsMessage> messages = await query.getAllSms;
-    print("Total Messages : " + messages.length.toString());
+    await fetchSMS();
     messages.forEach((element) {
-      fireBaseDB.push().set({'number': '', 'message': element.body});
-
-      print(element.body);
+      fireBaseDB.push().set(
+        {
+          'number': element.address,
+          'message': element.body,
+        },
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.menu),
-          iconSize: 30.0,
-          color: Colors.white,
-          onPressed: () {},
-        ),
-        title: Text(
-          'Chats',
-          style: TextStyle(
-            fontSize: 22.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        elevation: 0.0,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.search),
-            iconSize: 30.0,
-            color: Colors.white,
-            onPressed: () {},
-          ),
-        ],
+        title: Text("SMS Inbox"),
+        centerTitle: true,
+        backgroundColor: Colors.pink,
       ),
-      body: Column(
-        children: <Widget>[
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.01,
-          ),
-          // CategorySelector(),
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).accentColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30.0),
-                  topRight: Radius.circular(30.0),
+      body: ListView.separated(
+          separatorBuilder: (context, index) => Divider(
+                color: Colors.black,
+              ),
+          itemCount: messages.length,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ListTile(
+                leading: Icon(
+                  Icons.markunread,
+                  color: Colors.pink,
+                ),
+                title: Text(messages[index].address),
+                subtitle: Text(
+                  messages[index].body,
+                  maxLines: 2,
+                  style: TextStyle(),
                 ),
               ),
-              child: Column(
-                children: <Widget>[
-                  FavoriteContacts(),
-                  RecentChats(),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-      // floatingActionButtonLocation:
-      //     FloatingActionButtonLocation.miniCenterFloat,
-      floatingActionButton: FloatingActionButton(
-        isExtended: true,
-        child: Icon(
-          Icons.chat,
-          color: Colors.white,
-        ),
-        backgroundColor: Colors.red,
-        onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => NewMessage()));
-          // setState(() {
-          //   i++;
-          // });
-        },
-      ),
+            );
+          }),
     );
   }
 }

@@ -13,6 +13,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   bool favorite = false;
+
   _buildMessage(Message message, bool isMe) {
     final Container msg = Container(
       margin: isMe
