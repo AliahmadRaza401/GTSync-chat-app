@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text("SMS Inbox"),
         centerTitle: true,
-        backgroundColor: Colors.pink,
+        backgroundColor: Colors.red,
       ),
       body: ListView.separated(
           separatorBuilder: (context, index) => Divider(
@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: ListTile(
                 leading: Icon(
                   Icons.markunread,
-                  color: Colors.pink,
+                  color: Colors.red,
                 ),
                 title: Text(messages[index].address),
                 subtitle: Text(
