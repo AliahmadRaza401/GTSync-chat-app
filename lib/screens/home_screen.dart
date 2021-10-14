@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:gtsync/widgets/recent_chats.dart';
 import 'package:sms/sms.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -42,6 +43,25 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text("SMS Inbox"),
         centerTitle: true,
         backgroundColor: Colors.red,
+        actions: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(right: 16.0),
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RecentChats(),
+                  ),
+                );
+              },
+              splashColor: Color(0xff022b5e),
+              child: Icon(
+                Icons.message_rounded,
+              ),
+            ),
+          ),
+        ],
       ),
       body: ListView.separated(
           separatorBuilder: (context, index) => Divider(

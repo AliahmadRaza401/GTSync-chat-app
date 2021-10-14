@@ -1,9 +1,22 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:gtsync/models/message_model.dart';
 import 'package:gtsync/screens/chat_screen.dart';
 
+class RecentChats extends StatefulWidget {
+  @override
+  State<RecentChats> createState() => _RecentChatsState();
+}
 
-class RecentChats extends StatelessWidget {
+class _RecentChatsState extends State<RecentChats> {
+  final databaseReference = FirebaseDatabase.instance.reference();
+
+  void readData() {
+    databaseReference.once().then((DataSnapshot snapshot) {
+      print('Data : ${snapshot.value}');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
