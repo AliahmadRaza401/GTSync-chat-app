@@ -1,138 +1,70 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
 import 'package:gtsync/models/message_model.dart';
 import 'package:gtsync/screens/chat_screen.dart';
 
 class RecentChats extends StatefulWidget {
+  // RecentChats({required this.app});
+  // final FirebaseApp app;
   @override
   State<RecentChats> createState() => _RecentChatsState();
 }
 
 class _RecentChatsState extends State<RecentChats> {
-  final databaseReference = FirebaseDatabase.instance.reference();
+  final databaseReference = FirebaseDatabase.instance.reference().child("sms");
+  var sms = FirebaseDatabase.instance.reference().child('sms');
+  final fb = FirebaseDatabase.instance;
+  @override
+  void initState() {
+    super.initState();
+    readData();
+    // sms = databaseReference.reference().child('sms');
+  }
 
   void readData() {
+    print("run");
+    // var sms = databaseReference.child('message');
+    // print('data: ${sms.get()}');
     databaseReference.once().then((DataSnapshot snapshot) {
       print('Data : ${snapshot.value}');
     });
+    print("-----------");
   }
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30.0),
-            topRight: Radius.circular(30.0),
-          ),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30.0),
-            topRight: Radius.circular(30.0),
-          ),
-          child: ListView.builder(
-            itemCount: chats.length,
-            itemBuilder: (BuildContext context, int index) {
-              final Message chat = chats[index];
-              return GestureDetector(
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ChatScreen(
-                      user: chat.sender,
-                    ),
-                  ),
-                ),
-                child: Container(
-                  margin: EdgeInsets.only(top: 5.0, bottom: 5.0, right: 20.0),
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                  decoration: BoxDecoration(
-                    color: chat.unread ? Color(0xFFFFEFEE) : Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(20.0),
-                      bottomRight: Radius.circular(20.0),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          CircleAvatar(
-                            radius: 35.0,
-                            backgroundImage: AssetImage(chat.sender.imageUrl),
-                          ),
-                          SizedBox(width: 10.0),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                chat.sender.name,
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 15.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 5.0),
-                              Container(
-                                width: MediaQuery.of(context).size.width * 0.45,
-                                child: Text(
-                                  chat.text,
-                                  style: TextStyle(
-                                    color: Colors.blueGrey,
-                                    fontSize: 15.0,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: <Widget>[
-                          Text(
-                            chat.time,
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 5.0),
-                          chat.unread
-                              ? Container(
-                                  width: 40.0,
-                                  height: 20.0,
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).primaryColor,
-                                    borderRadius: BorderRadius.circular(30.0),
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    'NEW',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                )
-                              : Text(''),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
+    final ref = fb.reference().child("sms");
+    return Scaffold(
+      appBar: AppBar(),
+      body: Container(
+        color: Colors.greenAccent,
+        child: Column(
+          children: [
+            Text("Send Message"),
+            ElevatedButton(
+              onPressed: () {
+                print("click");
+                ref.child("message").once().then((DataSnapshot data) {
+                  print(data.value);
+                });
+              },
+              child: Text("GET"),
+            ),
+            Flexible(
+              child: FirebaseAnimatedList(
+                shrinkWrap: true,
+                query: sms,
+                itemBuilder: (BuildContext context, DataSnapshot snapshot,
+                    Animation<double> animation, int index) {
+                  return new ListTile(
+                    title: new Text(snapshot.value['message']),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
