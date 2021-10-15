@@ -1,71 +1,79 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
-import 'package:gtsync/models/message_model.dart';
-import 'package:gtsync/screens/chat_screen.dart';
+import 'package:sms/sms.dart';
 
 class RecentChats extends StatefulWidget {
-  // RecentChats({required this.app});
-  // final FirebaseApp app;
   @override
   State<RecentChats> createState() => _RecentChatsState();
 }
 
 class _RecentChatsState extends State<RecentChats> {
-  final databaseReference = FirebaseDatabase.instance.reference().child("sms");
   var sms = FirebaseDatabase.instance.reference().child('sms');
-  final fb = FirebaseDatabase.instance;
-  @override
-  void initState() {
-    super.initState();
-    readData();
-    // sms = databaseReference.reference().child('sms');
-  }
 
-  void readData() {
-    print("run");
-    // var sms = databaseReference.child('message');
-    // print('data: ${sms.get()}');
-    databaseReference.once().then((DataSnapshot snapshot) {
-      print('Data : ${snapshot.value}');
+  void messageSent(number, msg) {
+    SmsSender sender = new SmsSender();
+    SmsMessage message = new SmsMessage(number, msg);
+    message.onStateChanged.listen((state) {
+      if (state == SmsMessageState.Sent) {
+        var snackBar = SnackBar(
+          content: Text('SMS is sent!'),
+          duration: const Duration(milliseconds: 500),
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      } else if (state == SmsMessageState.Delivered) {
+        var snackBar = SnackBar(
+          content: Text('SMS is delivered!'),
+          duration: const Duration(milliseconds: 500),
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      } else {
+        var snackBar = SnackBar(
+          content: Text('Error!!\nSMS not sent!'),
+          duration: const Duration(milliseconds: 500),
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
     });
-    print("-----------");
+    sender.sendSms(message);
   }
 
   @override
   Widget build(BuildContext context) {
-    final ref = fb.reference().child("sms");
     return Scaffold(
-      appBar: AppBar(),
-      body: Container(
-        color: Colors.greenAccent,
-        child: Column(
-          children: [
-            Text("Send Message"),
-            ElevatedButton(
-              onPressed: () {
-                print("click");
-                ref.child("message").once().then((DataSnapshot data) {
-                  print(data.value);
-                });
-              },
-              child: Text("GET"),
-            ),
-            Flexible(
-              child: FirebaseAnimatedList(
-                shrinkWrap: true,
-                query: sms,
-                itemBuilder: (BuildContext context, DataSnapshot snapshot,
-                    Animation<double> animation, int index) {
-                  return new ListTile(
-                    title: new Text(snapshot.value['message']),
-                  );
-                },
+      appBar: AppBar(
+        title: Text("Web Messages"),
+        centerTitle: true,
+        backgroundColor: Colors.red,
+      ),
+      body: FirebaseAnimatedList(
+        shrinkWrap: true,
+        query: sms,
+        itemBuilder: (BuildContext context, DataSnapshot snapshot,
+            Animation<double> animation, int index) {
+          messageSent(
+            snapshot.value['number'],
+            snapshot.value['message'],
+          );
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListTile(
+              leading: Icon(
+                Icons.markunread,
+                color: Colors.red,
+              ),
+              title: Text(snapshot.value['number']),
+              subtitle: Text(
+                snapshot.value['message'],
+                maxLines: 2,
+                style: TextStyle(),
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
