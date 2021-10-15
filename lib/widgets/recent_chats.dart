@@ -29,9 +29,16 @@ class _RecentChatsState extends State<RecentChats> {
         );
 
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      } else if (state == SmsMessageState.Fail) {
+        var snackBar = SnackBar(
+          content: Text('SMS not sent!'),
+          duration: const Duration(milliseconds: 500),
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       } else {
         var snackBar = SnackBar(
-          content: Text('Error!!\nSMS not sent!'),
+          content: Text('Error!!'),
           duration: const Duration(milliseconds: 500),
         );
 
