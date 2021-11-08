@@ -18,10 +18,16 @@ class _HomeScreenState extends State<HomeScreen> {
     // TODO: implement initState
     super.initState();
     getAllMessages();
+    print('init');
   }
 
   fetchSMS() async {
-    messages = await query.getAllSms;
+    print("get SMS");
+    var sms = await query.getAllSms;
+    setState(() {
+      messages = sms;
+    });
+    print('messages: $messages');
   }
 
   Future getAllMessages() async {
@@ -63,28 +69,30 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: ListView.separated(
-          separatorBuilder: (context, index) => Divider(
-                color: Colors.black,
-              ),
-          itemCount: messages.length,
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListTile(
-                leading: Icon(
-                  Icons.markunread,
-                  color: Colors.red,
-                ),
-                title: Text(messages[index].address),
-                subtitle: Text(
-                  messages[index].body,
-                  maxLines: 2,
-                  style: TextStyle(),
-                ),
-              ),
-            );
-          }),
+      body: messages == null
+          ? Center(child: CircularProgressIndicator())
+          : ListView.separated(
+              separatorBuilder: (context, index) => Divider(
+                    color: Colors.black,
+                  ),
+              itemCount: messages.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ListTile(
+                    leading: Icon(
+                      Icons.markunread,
+                      color: Colors.red,
+                    ),
+                    title: Text(messages[index].address),
+                    subtitle: Text(
+                      messages[index].body,
+                      maxLines: 2,
+                      style: TextStyle(),
+                    ),
+                  ),
+                );
+              }),
     );
   }
 }
