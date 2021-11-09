@@ -21,8 +21,9 @@ class DisplaySMS extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Container(
+              width: MediaQuery.of(context).size.width * 0.5,
               margin: EdgeInsets.symmetric(vertical: 40, horizontal: 30),
-              padding: EdgeInsets.symmetric(vertical: 30, horizontal: 30),
+              padding: EdgeInsets.symmetric(vertical: 25, horizontal: 30),
               decoration: BoxDecoration(
                 color: Colors.red.withOpacity(0.6),
                 borderRadius: BorderRadius.circular(20),
