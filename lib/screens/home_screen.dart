@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:gtsync/screens/display_sms.dart';
 import 'package:gtsync/widgets/recent_chats.dart';
 import 'package:sms/sms.dart';
 
@@ -79,16 +80,29 @@ class _HomeScreenState extends State<HomeScreen> {
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: ListTile(
-                    leading: Icon(
-                      Icons.markunread,
-                      color: Colors.red,
-                    ),
-                    title: Text(messages[index].address),
-                    subtitle: Text(
-                      messages[index].body,
-                      maxLines: 2,
-                      style: TextStyle(),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DisplaySMS(
+                            msg: messages[index].body,
+                            num: messages[index].address,
+                          ),
+                        ),
+                      );
+                    },
+                    child: ListTile(
+                      leading: Icon(
+                        Icons.markunread,
+                        color: Colors.red,
+                      ),
+                      title: Text(messages[index].address),
+                      subtitle: Text(
+                        messages[index].body,
+                        maxLines: 2,
+                        style: TextStyle(),
+                      ),
                     ),
                   ),
                 );

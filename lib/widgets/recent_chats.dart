@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
+import 'package:gtsync/screens/display_sms.dart';
 import 'package:sms/sms.dart';
 
 class RecentChats extends StatefulWidget {
@@ -14,6 +15,7 @@ class _RecentChatsState extends State<RecentChats> {
   void messageSent(number, msg) {
     SmsSender sender = new SmsSender();
     SmsMessage message = new SmsMessage(number, msg);
+    sender.sendSms(message);
     message.onStateChanged.listen((state) {
       if (state == SmsMessageState.Sent) {
         var snackBar = SnackBar(
@@ -45,7 +47,6 @@ class _RecentChatsState extends State<RecentChats> {
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     });
-    sender.sendSms(message);
   }
 
   @override
@@ -65,21 +66,35 @@ class _RecentChatsState extends State<RecentChats> {
             snapshot.value['number'],
             snapshot.value['message'],
           );
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ListTile(
-              leading: Icon(
-                Icons.markunread,
-                color: Colors.red,
-              ),
-              title: Text(snapshot.value['number']),
-              subtitle: Text(
-                snapshot.value['message'],
-                maxLines: 2,
-                style: TextStyle(),
-              ),
-            ),
-          );
+          return snapshot == null
+              ? CircularProgressIndicator()
+              : Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DisplaySMS(
+                              msg: snapshot.value['message'],
+                              num: snapshot.value['number']),
+                        ),
+                      );
+                    },
+                    child: ListTile(
+                      leading: Icon(
+                        Icons.markunread,
+                        color: Colors.red,
+                      ),
+                      title: Text(snapshot.value['number']),
+                      subtitle: Text(
+                        snapshot.value['message'],
+                        maxLines: 2,
+                        style: TextStyle(),
+                      ),
+                    ),
+                  ),
+                );
         },
       ),
     );
